@@ -1,0 +1,10 @@
+---
+# https://yamllint.readthedocs.io/en/stable/configuration.html
+# https://yamllint.readthedocs.io/en/stable/configuration.html#extending-the-default-configuration
+
+# By using extends: you're only adding to or modifying the default rules
+extends: default
+rules:
+  document-start: disable
+  line-length:
+    max: 160

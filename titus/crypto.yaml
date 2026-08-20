@@ -1,0 +1,143 @@
+rules:
+
+# Rule patterns written to compile correctly for either Hyperscan or Vectorscan.
+# The Go fallback to regexp2 is much slower.
+#
+# Review the existing rules for reference and examples:
+# - https://github.com/praetorian-inc/titus/tree/main/pkg/rule/rules
+
+- name: Bitcoin Address
+  id: threat_hunting.bstrings.bitcoin_address
+  base_score: 20
+  description: >
+    Matches Bitcoin cryptocurrency wallet address format.
+  pattern: '\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\b'
+  min_entropy: 4.0
+  confidence: medium
+  examples:
+  - '1ABCDEFGHJKLMNPQRSTUVWXYZ234567'
+  categories:
+  - ioc
+  - crypto
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+
+- name: Aeon Wallet Address
+  id: threat_hunting.bstrings.aeon
+  base_score: 20
+  description: >
+    Matches Aeon cryptocurrency wallet address format.
+  pattern: '\bWm[st]{1}[0-9a-zA-Z]{94}\b'
+  min_entropy: 4.0
+  confidence: medium
+  examples:
+  - 'WmsABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk'
+  categories:
+  - ioc
+  - crypto
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+
+- name: Bytecoin Wallet Address
+  id: threat_hunting.bstrings.bytecoin
+  base_score: 20
+  description: >
+    Matches Bytecoin cryptocurrency wallet address format.
+  pattern: '\b2[0-9AB][0-9a-zA-Z]{93}\b'
+  min_entropy: 4.0
+  confidence: medium
+  examples:
+  - '2ABABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijk'
+  categories:
+  - ioc
+  - crypto
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+
+- name: Dashcoin Wallet Address
+  id: threat_hunting.bstrings.dashcoin
+  base_score: 20
+  description: >
+    Matches Dashcoin cryptocurrency wallet address format.
+  pattern: '\bD[0-9a-zA-Z]{94}\b'
+  min_entropy: 4.0
+  confidence: medium
+  examples:
+  - 'DABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkl'
+  categories:
+  - ioc
+  - crypto
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+
+- name: Dashcoin Wallet Address (Alternate Format)
+  id: threat_hunting.bstrings.dashcoin2
+  base_score: 20
+  description: >
+    Matches an alternate Dashcoin wallet address format.
+  pattern: '\b(7|X)[a-zA-Z0-9]{33}\b'
+  min_entropy: 4.0
+  confidence: medium
+  examples:
+  - '7ABCDEFGHIJKLMNOPQRSTUVWXYZ012345'
+  categories:
+  - ioc
+  - crypto
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+
+- name: Fantomcoin Wallet Address
+  id: threat_hunting.bstrings.fantomcoin
+  base_score: 20
+  description: >
+    Matches Fantomcoin cryptocurrency wallet address format.
+  pattern: '\b6[0-9a-zA-Z]{94}\b'
+  min_entropy: 4.0
+  confidence: medium
+  examples:
+  - '6ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkl'
+  categories:
+  - ioc
+  - crypto
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+
+- name: Monero Wallet Address
+  id: threat_hunting.bstrings.monero
+  base_score: 20
+  description: >
+    Matches standard and integrated Monero wallet address formats.
+  pattern: '\b4[0-9AB][0-9a-zA-Z]{93}\b|\b4[0-9AB][0-9a-zA-Z]{104}\b'
+  min_entropy: 4.0
+  confidence: medium
+  examples:
+  - '4ABABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij'
+  categories:
+  - ioc
+  - crypto
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+
+- name: Sumokoin Wallet Address
+  id: threat_hunting.bstrings.sumokoin
+  base_score: 20
+  description: >
+    Matches Sumokoin cryptocurrency wallet address format.
+  pattern: '\bSumoo[0-9a-zA-Z]{94}\b'
+  min_entropy: 4.0
+  confidence: medium
+  examples:
+  - 'SumooABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefgh'
+  categories:
+  - ioc
+  - crypto
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/

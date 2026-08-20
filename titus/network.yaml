@@ -1,0 +1,215 @@
+rules:
+
+# Rule patterns written to compile correctly for either Hyperscan or Vectorscan.
+# The Go fallback to regexp2 is much slower.
+#
+# Review the existing rules for reference and examples:
+# - https://github.com/praetorian-inc/titus/tree/main/pkg/rule/rules
+
+- name: RFC3986 URI
+  id: threat_hunting.bstrings.uri
+  base_score: 15
+  description: >
+    Matches URIs with a protocol scheme.
+  pattern: |
+    (?xi)
+    \b[a-z][a-z0-9+\-.]*://                     # Scheme
+    ([a-z0-9\-._~%!$&'()*+,;=]+@)?              # User
+    (?:[a-z0-9\-._~%]+                          # Named host
+    |\[[a-f0-9:.]+\]                            # IPv6 host
+    |\[v[a-f0-9][a-z0-9\-._~%!$&'()*+,;=:]+\])  # IPvFuture host
+    (:[0-9]+)?                                  # Port
+    (/[a-z0-9\-._~%!$&'()*+,;=:@]+)*/?          # Path
+    (\?[a-z0-9\-._~%!$&'()*+,;=:@/?]*)?         # Query
+    (\#[a-z0-9\-._~%!$&'()*+,;=:@/?]*)?         # Fragment
+  examples:
+  - 'https://example.internal/path?query=1#fragment'
+  - 'ssh://[fd7a:bcde:5432::10:2222]'
+  categories:
+  - ioc
+  - network
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+
+- name: URI with Embedded Credentials
+  id: threat_hunting.bstrings.urlUser
+  base_score: 40
+  description: >
+    Matches URIs with a credential embedded before the @ host separator.
+    Escaping a single quote in YAML can be done with just ''.
+  pattern: '(?i)\b[a-z0-9+\-.]+://(?:[a-z0-9\-._~%!$&''()*+,;=]+)@'
+  examples:
+  - 'ftp://user:pass@example.internal'
+  categories:
+  - ioc
+  - network
+  - credential
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+
+- name: IPv4 Dotted Decimal
+  id: threat_hunting.bstrings.ipv4_dotted_decimal
+  base_score: 10
+  description: >
+    Matches the standard dotted-decimal IPv4 representation
+    (e.g. 192.0.2.1), correctly bounded to the valid 0-255 per-octet
+    range. Covers the common case only; alternate encodings are handled
+    by the threat_hunting.sans.ipv4_* rules.
+  pattern: '\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b'
+  examples:
+  - '192.0.2.1'
+  - '203.0.113.5'
+  categories:
+  - ioc
+  - network
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - https://datatracker.ietf.org/doc/html/rfc5737
+
+- name: IPv4 Decimal Integer
+  id: threat_hunting.sans.ipv4_decimal
+  base_score: 5
+  description: >
+    Matches IPv4 addresses represented as a single decimal integer
+    (e.g. 3221225985 for 192.0.2.1).
+  pattern: '\b(?:[1-9]\d{0,8}|[1-3]\d{9}|4[01]\d{8}|42[0-8]\d{7}|429[0-3]\d{6}|4294[0-8]\d{5}|42949[0-5]\d{4}|429496[0-6]\d{3}|4294967[01]\d{2}|42949672[0-4]\d|429496729[0-5])\b'
+  pattern_requirements:
+    min_digits: 8
+  examples:
+  - '3221225985'
+  categories:
+  - ioc
+  - network
+  references:
+  - https://isc.sans.edu/diary/Adventures%20in%20Validating%20IPv4%20Addresses/30348
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - https://datatracker.ietf.org/doc/html/rfc5737
+
+- name: IPv4 Dotted Hexadecimal
+  id: threat_hunting.sans.ipv4_hex_dotted
+  base_score: 10
+  description: >
+    Matches IPv4 addresses with each octet represented in hexadecimal,
+    still dot-separated (e.g. 0xC0.0x00.0x02.0x01 for 192.0.2.1).
+  pattern: '(?:0x[0-9a-fA-F]{1,2}\.){3}0x[0-9a-fA-F]{1,2}'
+  examples:
+  - '0xC0.0x00.0x02.0x01'
+  categories:
+  - ioc
+  - network
+  references:
+  - https://isc.sans.edu/diary/Adventures%20in%20Validating%20IPv4%20Addresses/30348
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - https://datatracker.ietf.org/doc/html/rfc5737
+
+- name: IPv4 Hexadecimal Integer
+  id: threat_hunting.sans.ipv4_hex_integer
+  base_score: 10
+  description: >
+    Matches IPv4 addresses collapsed into a single hexadecimal integer
+    (e.g. 0xC0000201 for 192.0.2.1).
+  pattern: '0x[0-9a-fA-F]{6,8}'
+  examples:
+  - '0xC0000201'
+  categories:
+  - ioc
+  - network
+  references:
+  - https://isc.sans.edu/diary/Adventures%20in%20Validating%20IPv4%20Addresses/30348
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - https://datatracker.ietf.org/doc/html/rfc5737
+
+- name: IPv4 Dotted Octal
+  id: threat_hunting.sans.ipv4_dotted_octal
+  base_score: 10
+  description: >
+    Matches IPv4 addresses with each octet in octal, unpadded and
+    dot-separated (e.g. 300.0.2.1 for 192.0.2.1).
+  pattern: '(?:(?:[0-3][0-7]{2}|[0-7]{1,2})\.){3}(?:[0-3][0-7]{2}|[0-7]{1,2})'
+  examples:
+  - '300.0.2.1'
+  categories:
+  - ioc
+  - network
+  references:
+  - https://isc.sans.edu/diary/Adventures%20in%20Validating%20IPv4%20Addresses/30348
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - https://datatracker.ietf.org/doc/html/rfc5737
+
+- name: IPv4 Octal Integer
+  id: threat_hunting.sans.ipv4_octal
+  base_score: 10
+  description: >
+    Matches IPv4 addresses collapsed into a single octal integer string
+    (e.g. 0o30000000201 for 192.0.2.1).
+  pattern: '0o?(?:[0-7]{9,10}|[0-3][0-7]{10})'
+  examples:
+  - '0o30000000201'
+  categories:
+  - ioc
+  - network
+  references:
+  - https://isc.sans.edu/diary/Adventures%20in%20Validating%20IPv4%20Addresses/30348
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - https://datatracker.ietf.org/doc/html/rfc5737
+
+- name: IPv4 Binary
+  id: threat_hunting.sans.ipv4_binary
+  base_score: 10
+  description: >
+    Matches IPv4 addresses with each octet represented in binary, still
+    dot-separated (e.g. 11000000.00000000.00000010.00000001 for
+    192.0.2.1).
+  pattern: '(?:[01]{8}\.){3}[01]{8}'
+  examples:
+  - '11000000.00000000.00000010.00000001'
+  categories:
+  - ioc
+  - network
+  references:
+  - https://isc.sans.edu/diary/Adventures%20in%20Validating%20IPv4%20Addresses/30348
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - https://datatracker.ietf.org/doc/html/rfc5737
+
+- name: IPv6 Address
+  id: threat_hunting.bstrings.ipv6
+  base_score: 10
+  description: >
+    Matches standard colon-separated IPv6 addresses.
+    Rewritten from the bstrings source to be case-insensitive
+    and match zero-compressed (::) notation.
+  pattern: '(?:[A-Fa-f0-9]{1,4}(?::|::)){3,8}[A-Fa-f0-9]{1,4}'
+  examples:
+  - '2001:0123:0000:0000:0000:AABB:CCDD:1111'
+  - '2001:0123::aabb:cc:dd11'
+  categories:
+  - ioc
+  - network
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+
+- name: MAC Address
+  id: threat_hunting.bstrings.mac
+  base_score: 10
+  description: >
+    Matches MAC addresses in colon, hyphen, or no-separator form.
+    Split into 3 pattern conditions based on delimiter to avoid
+    matching on something like "AA:BB-CCDDEEFF".
+    Rewritten from bstrings' backreference-based version.
+    Minimum entropy settings here reduce false positives, but
+    exclude values like FF:FF:FF:FF:FF:FF.
+  pattern: '\b(?:[0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}\b|\b(?:[0-9A-Fa-f]{2}-){5}[0-9A-Fa-f]{2}\b|\b[0-9A-Fa-f]{12}\b'
+  min_entropy: 1.5
+  confidence: low
+  examples:
+  - '00:1A:2B:3C:4D:5E'
+  categories:
+  - ioc
+  - network
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/

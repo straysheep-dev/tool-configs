@@ -1,0 +1,41 @@
+rules:
+
+# Rule patterns written to compile correctly for either Hyperscan or Vectorscan.
+# The Go fallback to regexp2 is much slower.
+#
+# Review the existing rules for reference and examples:
+# - https://github.com/praetorian-inc/titus/tree/main/pkg/rule/rules
+
+- name: Environment Variable Assignment
+  id: threat_hunting.bstrings.var_set
+  base_score: 10
+  description: >
+    Matches shell-style variable assignments (var=value), useful for
+    spotting inline environment/config values in scripts or logs.
+  pattern: '(?i)\b[a-z_0-9]+=[\\/:*?<>|;\- _a-z0-9]+'
+  examples:
+  - 'API_HOST=example.internal'
+  categories:
+  - ioc
+  - scripting
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+
+- name: UUID (GUID)
+  id: threat_hunting.bstrings.uuid
+  base_score: 10
+  description: >
+    Matches a standard UUID / GUID string.
+  pattern: '(?i)\b[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}\b'
+  min_entropy: 1.5
+  confidence: low
+  examples:
+  - 'A1B2C3D4-E5F6-A7B8-C9D0-E1F2A3B4C5D6'
+  categories:
+  - ioc
+  - uuid
+  references:
+  - https://github.com/EricZimmerman/bstrings
+  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - https://datatracker.ietf.org/doc/html/rfc9562
