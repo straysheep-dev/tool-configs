@@ -1,89 +1,89 @@
 rules:
 
-# Rule patterns written to compile correctly for either Hyperscan or Vectorscan.
-# The Go fallback to regexp2 is much slower.
-#
-# Review the existing rules for reference and examples:
-# - https://github.com/praetorian-inc/titus/tree/main/pkg/rule/rules
+  # Rule patterns written to compile correctly for either Hyperscan or Vectorscan.
+  # The Go fallback to regexp2 is much slower.
+  #
+  # Review the existing rules for reference and examples:
+  # - https://github.com/praetorian-inc/titus/tree/main/pkg/rule/rules
 
-- name: Base64 Blob
-  id: threat_hunting.bstrings.base64
-  base_score: 15
-  description: >
-    Matches base64-encoded blobs of at least 32 characters. Useful for
-    surfacing encoded payloads, config blobs, or embedded binaries in
-    source, scripts, or commit history.
-    Swaps the bstrings wildcard `*` for `{4,}` as a minimum, and removes
-    the line start and line end requirements. The min_entropy value helps
-    reduce false positives.
-  pattern: '\b(?:[A-Za-z0-9+/]{4}){4,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})\b'
-  min_entropy: 4.0
-  confidence: medium
-  examples:
-  - 'MTkyLjAuMi4xCg=='
-  categories:
-  - ioc
-  - encoding
-  references:
-  - https://github.com/EricZimmerman/bstrings
-  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - name: Base64 Blob
+    id: threat_hunting.bstrings.base64
+    base_score: 15
+    description: >
+      Matches base64-encoded blobs of at least 32 characters. Useful for
+      surfacing encoded payloads, config blobs, or embedded binaries in
+      source, scripts, or commit history.
+      Swaps the bstrings wildcard `*` for `{4,}` as a minimum, and removes
+      the line start and line end requirements. The min_entropy value helps
+      reduce false positives.
+    pattern: '\b(?:[A-Za-z0-9+/]{4}){4,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})\b'
+    min_entropy: 4.0
+    confidence: medium
+    examples:
+      - 'MTkyLjAuMi4xCg=='
+    categories:
+      - ioc
+      - encoding
+    references:
+      - https://github.com/EricZimmerman/bstrings
+      - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
 
-- name: Hex Blob (Short)
-  id: threat_hunting.straysheep_dev.shellcode_hex
-  base_score: 15
-  description: >
-    Matches sequences of hex bytes in the formats commonly produced by
-    msfvenom/Metasploit payload output: raw space-separated pairs
-    (AB CD EF), backslash-escaped C/Python-style chains (\xAB\xCD\xEF),
-    and comma-separated 0x arrays as used in PowerShell/C# (0xAB,0xCD).
-    Requires at least 3 bytes in sequence to match, may produce false
-    positives. Entropy requirements here will lead to false negatives.
-    This pattern matches hex blobs shorter than 64 hex characters.
-  pattern: '\b(?:[0-9a-fA-F]{2}\s?){3,64}\b|(?:\\x[0-9a-fA-F]{2}){3,64}|(?:0x[0-9a-fA-F]{2}[, ]?){3,64}'
-  examples:
-  - 'AB CD EF 01 23 45 67 89'
-  - '\x00\xa1\xb2\xc3\xd4\xe5\xf6'
-  - '0x00,0xa1,0xb2,0xc3,0xd4'
-  categories:
-  - ioc
-  - shellcode
-  references:
-  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - name: Hex Blob (Short)
+    id: threat_hunting.straysheep_dev.shellcode_hex
+    base_score: 15
+    description: >
+      Matches sequences of hex bytes in the formats commonly produced by
+      msfvenom/Metasploit payload output: raw space-separated pairs
+      (AB CD EF), backslash-escaped C/Python-style chains (\xAB\xCD\xEF),
+      and comma-separated 0x arrays as used in PowerShell/C# (0xAB,0xCD).
+      Requires at least 3 bytes in sequence to match, may produce false
+      positives. Entropy requirements here will lead to false negatives.
+      This pattern matches hex blobs shorter than 64 hex characters.
+    pattern: '\b(?:[0-9a-fA-F]{2}\s?){3,64}\b|(?:\\x[0-9a-fA-F]{2}){3,64}|(?:0x[0-9a-fA-F]{2}[, ]?){3,64}'
+    examples:
+      - 'AB CD EF 01 23 45 67 89'
+      - '\x00\xa1\xb2\xc3\xd4\xe5\xf6'
+      - '0x00,0xa1,0xb2,0xc3,0xd4'
+    categories:
+      - ioc
+      - shellcode
+    references:
+      - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
 
-- name: Hex Blob (Long)
-  id: threat_hunting.straysheep_dev.shellcode_hex
-  base_score: 15
-  description: >
-    Matches sequences of hex bytes in the formats commonly produced by
-    msfvenom/Metasploit payload output: raw space-separated pairs
-    (AB CD EF), backslash-escaped C/Python-style chains (\xAB\xCD\xEF),
-    and comma-separated 0x arrays as used in PowerShell/C# (0xAB,0xCD).
-    Requires at least 3 bytes in sequence to match, may produce false
-    positives. Entropy requirements here will lead to false negatives.
-    This pattern matches hex blobs longer than 64 hex characters.
-  pattern: '\b(?:[0-9a-fA-F]{2}\s?){64,}\b|(?:\\x[0-9a-fA-F]{2}){64,}|(?:0x[0-9a-fA-F]{2}[, ]?){64,}'
-  examples:
-  - 'AB CD EF 01 23 45 67 89'
-  - '\x00\xa1\xb2\xc3\xd4\xe5\xf6'
-  - '0x00,0xa1,0xb2,0xc3,0xd4'
-  categories:
-  - ioc
-  - shellcode
-  references:
-  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - name: Hex Blob (Long)
+    id: threat_hunting.straysheep_dev.shellcode_hex
+    base_score: 15
+    description: >
+      Matches sequences of hex bytes in the formats commonly produced by
+      msfvenom/Metasploit payload output: raw space-separated pairs
+      (AB CD EF), backslash-escaped C/Python-style chains (\xAB\xCD\xEF),
+      and comma-separated 0x arrays as used in PowerShell/C# (0xAB,0xCD).
+      Requires at least 3 bytes in sequence to match, may produce false
+      positives. Entropy requirements here will lead to false negatives.
+      This pattern matches hex blobs longer than 64 hex characters.
+    pattern: '\b(?:[0-9a-fA-F]{2}\s?){64,}\b|(?:\\x[0-9a-fA-F]{2}){64,}|(?:0x[0-9a-fA-F]{2}[, ]?){64,}'
+    examples:
+      - 'AB CD EF 01 23 45 67 89'
+      - '\x00\xa1\xb2\xc3\xd4\xe5\xf6'
+      - '0x00,0xa1,0xb2,0xc3,0xd4'
+    categories:
+      - ioc
+      - shellcode
+    references:
+      - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
 
-- name: Hex Blob (NOP Sled)
-  id: threat_hunting.straysheep_dev.shellcode_hex
-  base_score: 15
-  description: >
-    Matches on NOP sleds in a sequence of 3 or more.
-  pattern: '\b(?:90\s?){3,}|(?:\\x90){3,}|(?:0x90[, ]?){3,}'
-  examples:
-  - '90 90 90 90 90 90'
-  - '\x90\x90\x90\x90\x90'
-  - '0x90,0x90,0x90,0x90,0x90'
-  categories:
-  - ioc
-  - shellcode
-  references:
-  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - name: Hex Blob (NOP Sled)
+    id: threat_hunting.straysheep_dev.shellcode_hex
+    base_score: 15
+    description: >
+      Matches on NOP sleds in a sequence of 3 or more.
+    pattern: '\b(?:90\s?){3,}|(?:\\x90){3,}|(?:0x90[, ]?){3,}'
+    examples:
+      - '90 90 90 90 90 90'
+      - '\x90\x90\x90\x90\x90'
+      - '0x90,0x90,0x90,0x90,0x90'
+    categories:
+      - ioc
+      - shellcode
+    references:
+      - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/

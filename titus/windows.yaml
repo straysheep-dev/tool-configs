@@ -1,113 +1,113 @@
 rules:
 
-# Rule patterns written to compile correctly for either Hyperscan or Vectorscan.
-# The Go fallback to regexp2 is much slower.
-#
-# Review the existing rules for reference and examples:
-# - https://github.com/praetorian-inc/titus/tree/main/pkg/rule/rules
+  # Rule patterns written to compile correctly for either Hyperscan or Vectorscan.
+  # The Go fallback to regexp2 is much slower.
+  #
+  # Review the existing rules for reference and examples:
+  # - https://github.com/praetorian-inc/titus/tree/main/pkg/rule/rules
 
-- name: Windows File Path
-  id: threat_hunting.bstrings.win_path
-  base_score: 10
-  description: >
-    Matches Windows drive-letter or UNC-rooted file paths.
-    Ported from bstrings' win_path pattern. The path-segment
-    repetition is bounded to 32 segments of 260 characters.
-  pattern: '(?:"?[a-zA-Z]:|\\\\[^\\/:*?<>|]+\\[^\\/:*?<>|]*)\\(?:[^\\/:*?<>|]{1,260}\\){0,32}\w[^\\/:*?<>|]*'
-  examples:
-  - 'C:\Users\Public\payload.exe'
-  - '\\example.internal\share\folder\file.dat'
-  categories:
-  - ioc
-  - windows
-  references:
-  - https://github.com/EricZimmerman/bstrings
-  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - name: Windows File Path
+    id: threat_hunting.bstrings.win_path
+    base_score: 10
+    description: >
+      Matches Windows drive-letter or UNC-rooted file paths.
+      Ported from bstrings' win_path pattern. The path-segment
+      repetition is bounded to 32 segments of 260 characters.
+    pattern: '(?:"?[a-zA-Z]:|\\\\[^\\/:*?<>|]+\\[^\\/:*?<>|]*)\\(?:[^\\/:*?<>|]{1,260}\\){0,32}\w[^\\/:*?<>|]*'
+    examples:
+      - 'C:\Users\Public\payload.exe'
+      - '\\example.internal\share\folder\file.dat'
+    categories:
+      - ioc
+      - windows
+    references:
+      - https://github.com/EricZimmerman/bstrings
+      - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
 
-- name: UNC Path Reference
-  id: threat_hunting.bstrings.unc
-  base_score: 10
-  description: >
-    Matches a raw UNC server/share reference (\\server\share), coarser
-    than win_path, flags a network share reference without requiring
-    a full trailing path.
-    Named capture groups are removed for Hyperscan / Vectorscan.
-  pattern: '(?i)\\\\[a-z0-9 %._-]+\\[a-z0-9 $%._-]+'
-  examples:
-  - '\\example.internal\shared'
-  categories:
-  - ioc
-  - windows
-  references:
-  - https://github.com/EricZimmerman/bstrings
-  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - name: UNC Path Reference
+    id: threat_hunting.bstrings.unc
+    base_score: 10
+    description: >
+      Matches a raw UNC server/share reference (\\server\share), coarser
+      than win_path, flags a network share reference without requiring
+      a full trailing path.
+      Named capture groups are removed for Hyperscan / Vectorscan.
+    pattern: '(?i)\\\\[a-z0-9 %._-]+\\[a-z0-9 $%._-]+'
+    examples:
+      - '\\example.internal\shared'
+    categories:
+      - ioc
+      - windows
+    references:
+      - https://github.com/EricZimmerman/bstrings
+      - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
 
-- name: Windows SID
-  id: threat_hunting.bstrings.sid
-  base_score: 15
-  description: >
-    Matches Windows Security Identifiers, useful for spotting hardcoded
-    account/group references in scripts or config.
-    Subgroup matching is disabled here.
-  pattern: '\bS-\d-\d+-(?:\d+-){1,14}\d+\b'
-  examples:
-  - 'S-1-500-123456789-123456789-123456789-1234'
-  categories:
-  - ioc
-  - windows
-  references:
-  - https://github.com/EricZimmerman/bstrings
-  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - name: Windows SID
+    id: threat_hunting.bstrings.sid
+    base_score: 15
+    description: >
+      Matches Windows Security Identifiers, useful for spotting hardcoded
+      account/group references in scripts or config.
+      Subgroup matching is disabled here.
+    pattern: '\bS-\d-\d+-(?:\d+-){1,14}\d+\b'
+    examples:
+      - 'S-1-500-123456789-123456789-123456789-1234'
+    categories:
+      - ioc
+      - windows
+    references:
+      - https://github.com/EricZimmerman/bstrings
+      - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
 
-- name: Windows Registry Path
-  id: threat_hunting.bstrings.windows_registry
-  base_score: 15
-  description: >
-    Matches Windows registry hive paths (software, sam, system,
-    security), commonly seen in persistence and credential-access
-    techniques.
-    Adjusted the registry hive patterns to be grouped together.
-  pattern: '(?i)\b(?:[a-z0-9]\\)*(?:software|sam|system|security)\\[a-z0-9\\]+'
-  examples:
-  - 'software\microsoft\windows\currentversion\run'
-  - 'SYSTEM\CurrentControlset\Services'
-  categories:
-  - ioc
-  - windows
-  references:
-  - https://github.com/EricZimmerman/bstrings
-  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - name: Windows Registry Path
+    id: threat_hunting.bstrings.windows_registry
+    base_score: 15
+    description: >
+      Matches Windows registry hive paths (software, sam, system,
+      security), commonly seen in persistence and credential-access
+      techniques.
+      Adjusted the registry hive patterns to be grouped together.
+    pattern: '(?i)\b(?:[a-z0-9]\\)*(?:software|sam|system|security)\\[a-z0-9\\]+'
+    examples:
+      - 'software\microsoft\windows\currentversion\run'
+      - 'SYSTEM\CurrentControlset\Services'
+    categories:
+      - ioc
+      - windows
+    references:
+      - https://github.com/EricZimmerman/bstrings
+      - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
 
-- name: BitLocker Recovery Key
-  id: threat_hunting.bstrings.bitlocker
-  base_score: 25
-  description: >
-    Matches BitLocker recovery key format (8 groups of 6 digits).
-    Simplified the bstrings pattern with (<group>){7}.
-  pattern: '\b(?:[0-9]{6}-){7}[0-9]{6}\b'
-  examples:
-  - '123456-234567-345678-456789-567890-678901-789012-890123'
-  categories:
-  - ioc
-  - windows
-  references:
-  - https://github.com/EricZimmerman/bstrings
-  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - name: BitLocker Recovery Key
+    id: threat_hunting.bstrings.bitlocker
+    base_score: 25
+    description: >
+      Matches BitLocker recovery key format (8 groups of 6 digits).
+      Simplified the bstrings pattern with (<group>){7}.
+    pattern: '\b(?:[0-9]{6}-){7}[0-9]{6}\b'
+    examples:
+      - '123456-234567-345678-456789-567890-678901-789012-890123'
+    categories:
+      - ioc
+      - windows
+    references:
+      - https://github.com/EricZimmerman/bstrings
+      - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
 
-- name: VS Build Scripting
-  id: threat_hunting.straysheep_dev.vs_build_scripting
-  base_score: 10
-  description: >
-    Matches keywords associated with build-time or install-time script
-    execution (exec, call, powershell, .ps1, .bat, command=), useful for
-    spotting scripting hooks in build pipelines or installers.
-  pattern: '\b(?:exec|call|powershell|\.ps1|\.bat)\b|\bcommand='
-  examples:
-  - 'powershell -enc ABCDEF0123456789'
-  - 'call setup.bat'
-  - 'command=payload.exe'
-  categories:
-  - ioc
-  - scripting
-  references:
-  - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
+  - name: VS Build Scripting
+    id: threat_hunting.straysheep_dev.vs_build_scripting
+    base_score: 10
+    description: >
+      Matches keywords associated with build-time or install-time script
+      execution (exec, call, powershell, .ps1, .bat, command=), useful for
+      spotting scripting hooks in build pipelines or installers.
+    pattern: '\b(?:exec|call|powershell|\.ps1|\.bat)\b|\bcommand='
+    examples:
+      - 'powershell -enc ABCDEF0123456789'
+      - 'call setup.bat'
+      - 'command=payload.exe'
+    categories:
+      - ioc
+      - scripting
+    references:
+      - https://www.antisyphontraining.com/on-demand-courses/regular-expressions-your-new-lifestyle-w-joff-thyer/
