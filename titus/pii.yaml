@@ -13,7 +13,7 @@ rules:
       Matches standard email address formats found in configs, code
       comments, commit history, or leaked correspondence. Adjusted
       to be case-insensitive.
-    pattern: '\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}\b'
+    pattern: '\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,24}\b'
     examples:
       - 'user@example.internal'
     categories:

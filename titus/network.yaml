@@ -39,7 +39,7 @@ rules:
     description: >
       Matches URIs with a credential embedded before the @ host separator.
       Escaping a single quote in YAML can be done with just ''.
-    pattern: '(?i)\b[a-z0-9+\-.]+://(?:[a-z0-9\-._~%!$&''()*+,;=]+)@'
+    pattern: '(?i)\b[a-z0-9+\-.]+://(?:[a-z0-9\-._~%!$&''()*+,;:=]+)@'
     examples:
       - 'ftp://user:pass@example.internal'
     categories:
