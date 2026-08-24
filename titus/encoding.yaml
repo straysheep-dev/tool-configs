@@ -1,3 +1,7 @@
+---
+# SPDX-License-Identifier: MIT
+# Assisted-by: Claude:claude-sonnet-5
+
 rules:
 
   # Rule patterns written to compile correctly for either Hyperscan or Vectorscan.
@@ -14,9 +18,11 @@ rules:
       surfacing encoded payloads, config blobs, or embedded binaries in
       source, scripts, or commit history.
       Swaps the bstrings wildcard `*` for `{2,}` as a minimum, and removes
-      the line start and line end requirements. The min_entropy value helps
-      reduce false positives.
-    pattern: '\b(?:[A-Za-z0-9+/]{4}){2,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})\b'
+      the line start and line end requirements. A negative look-ahead was
+      added to the end of the pattern, to determine where the pattern stops.
+      False positives are likely here on /path/ strings without limiting
+      the density of forward slashes `/` in a successful match.
+    pattern: '\b(?:[A-Za-z0-9+/]{4}){2,}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})(?![A-Za-z0-9+/=])'
     confidence: medium
     examples:
       - 'MTkyLjAuMi4xCg=='

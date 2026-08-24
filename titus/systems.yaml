@@ -1,3 +1,7 @@
+---
+# SPDX-License-Identifier: MIT
+# Assisted-by: Claude:claude-sonnet-5
+
 rules:
 
   # Rule patterns written to compile correctly for either Hyperscan or Vectorscan.

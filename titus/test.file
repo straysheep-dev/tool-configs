@@ -1,0 +1,81 @@
+# Test Matches - All patterns in this section should have at least one match, these are derived from the example strings.
+
+    1ABCDEFGHJKLMNPQRSTUVWXYZ234567
+
+    WmsABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef
+
+    2ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef
+
+    DABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef
+
+    7ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456
+
+    6ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef
+
+    4ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef
+
+    SumooABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef
+
+    MTkyLjAuMi4xCg==
+
+    AB CD EF 01 23 45 67 89
+
+    0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F,0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F
+
+    90 90 90 90 90 90
+
+    https://example.internal/path?query=1#fragment
+
+    ftp://user:pass@example.internal
+
+    192.0.2.1
+
+    3221225985
+
+    0xC0.0x00.0x02.0x01
+
+    0xC0000201
+
+    300.0.2.1
+
+    0o30000000201
+
+    11000000.00000000.00000010.00000001
+
+    2001:0123:0000:0000:0000:AABB:CCDD:1111
+
+    00:1A:2B:3C:4D:5E
+
+    user@example.internal
+
+    (555) 234-5678
+
+    4111 1111 1111 1111
+
+    12345-1234
+
+    API_HOST=example.internal
+
+    A1B2C3D4-E5F6-A7B8-C9D0-E1F2A3B4C5D6
+
+    C:\Users\Public\payload.exe
+
+    \\example.internal\shared
+
+    S-1-500-123456789-123456789-123456789-1234
+
+    software\microsoft\windows\currentversion\run
+
+    123456-234567-345678-456789-567890-678901-789012-890123
+
+    powershell -enc ABCDEF0123456789
+
+
+# Test False-Positives - Patterns in this section should not have a match (usually).
+
+    ThisLooksLikeAStringThatShouldMatchButItShouldN0tMatch
+
+    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+
+    This String Should Not Match: 1111-1111-11-1111-
+

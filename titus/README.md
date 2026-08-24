@@ -5,6 +5,12 @@
 > ![TIP]
 > There's no reason why custom rules can't be used to do threat hunting and source code review.
 
+## Notes & TODO
+
+There's currently no good way to filter matches based on a priority. In other words, ignore base64 matches, if the same string matches an email pattern.
+
+For now, it's better to have false positives than false negatives. We can sift through the noise using `titus explore`. TODO: Review using the [scoring mechanism](https://github.com/praetorian-inc/titus/tree/main#finding-scoring) for this.
+
 ## License
 
 All [bstrings](https://github.com/EricZimmerman/bstrings/blob/master/LICENSE.md) patterns are under the same [MIT license](../LICENSE).
