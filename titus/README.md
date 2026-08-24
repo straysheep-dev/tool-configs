@@ -2,7 +2,7 @@
 
 [Titus](https://github.com/praetorian-inc/titus) is a fast secrets scanner that can ingest custom rule files. [The existing rule files](https://github.com/praetorian-inc/titus/tree/main/pkg/rule/rules) can be used as reference to build your own.
 
-> ![TIP]
+> [!TIP]
 > There's no reason why custom rules can't be used to do threat hunting and source code review.
 
 ## Notes & TODO
