@@ -1,0 +1,19 @@
+# .github/workflows/shellcheck.yml
+
+# Taken from the following example:
+# https://www.shellcheck.net/wiki/GitHub-Actions
+
+name: shellcheck
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Run ShellCheck
+        run: find . -type f -name "*.sh" -exec shellcheck {} +
